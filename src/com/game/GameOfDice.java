@@ -61,10 +61,14 @@ public class GameOfDice {
             }
 
             //Display Score Table
-            gameOfDice.displayScoreTable(players, incrementTimeStamp);
+            gameOfDice.displayScoreTable(players);
         }
     }
 
+    /**
+     * Takes input from the user
+     * User can either roll the dice or abort the game
+     */
     public void handleInput(Player player) {
         Scanner scanner = new Scanner(System.in);
         try {
@@ -85,11 +89,19 @@ public class GameOfDice {
         }
     }
 
+    /**
+     * Rolls dice
+     * Adds to score of current player
+     * Determines if player has rolled a six or if current player's next turn is to be skipped
+     */
     public int rollDice(Player player, int turn, int n, int m) {
         Random random = new Random();
         int diceRoll = random.nextInt(6)+1;
         System.out.println("Points achieved by " + player.getName() + " : " + diceRoll);
+
+        //Limit score to m for displaying Score Table
         player.setScore(player.getScore()+diceRoll > m ? m : player.getScore()+diceRoll);
+
         if(diceRoll == 1 && player.getPreviousRollValue() == 1) {
             player.setSkipTurn(true);
         } else {
@@ -105,8 +117,11 @@ public class GameOfDice {
         return (turn+1)%n;
     }
 
-    public void displayScoreTable(ArrayList<Player> players, boolean incrementSortIndex) {
-        ArrayList<Player> scoreTable = new ArrayList<>(players);
+    /**
+     * Calculate rank of each player
+     * Display Score Table
+     */
+    public void displayScoreTable(ArrayList<Player> players) {
         ArrayList<Player> winners = new ArrayList<>();
         ArrayList<Player> active = new ArrayList<>();
         for(Player player : players) {
@@ -118,23 +133,27 @@ public class GameOfDice {
         Collections.sort(winners, Comparator.comparing(Player::getCompletionTimeStamp));
         Collections.sort(active, Comparator.comparing(Player::getScore).reversed());
         System.out.println("Score Table :");
-
         System.out.println("Rank\tPlayer Id\tPlayer Name\tScore");
+
+        //Display the winners sorted on the basis of earliest time in which m points was achieved by the player
         for(int i=0;i<winners.size();i++) {
             System.out.println(i+1+"\t"+winners.get(i).getId()+"\t\t"+winners.get(i).getName()+"\t"+winners.get(i).getScore());
         }
+
+        //Display the rest of the active players sorted based on their score
         for(int i=0;i<active.size();i++) {
             System.out.println(i+1+winners.size()+"\t"+active.get(i).getId()+"\t\t"+active.get(i).getName()+"\t"+active.get(i).getScore());
         }
 
+        //Game is complete if there are no active players remaining
         if(active.size() == 0) {
             System.out.println("Game Complete");
             System.exit(0);
         }
 
-        if(incrementSortIndex) {
+        if(incrementTimeStamp) {
             timeStamp++;
-            incrementSortIndex = false;
+            incrementTimeStamp = false;
         }
     }
 
@@ -144,7 +163,9 @@ public class GameOfDice {
     }
 }
 
-
+/**
+ * Player POJO
+ */
 class Player {
 
     private int id;
