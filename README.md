@@ -1,4 +1,4 @@
-#Instructions for running the Program
+#Instructions for running the Game
 - Clone the repository in any path. (Eg. Program/)
 - Navigate to GameOfDice Class which contains main method. (Program/GameOfDice/src/com/game/)
 - Open terminal.
