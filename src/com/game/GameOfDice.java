@@ -1,13 +1,15 @@
 package com.game;
 import java.util.*;
+
 public class GameOfDice {
     public static boolean rolledSix = false;
     public static int timeStamp = 0;
     public static boolean incrementTimeStamp = false;
 
-
     public static void main(String[] args) {
+        //n = Number of Players
         int n = Integer.parseInt(args[0]);
+        //m = Max Score
         int m = Integer.parseInt(args[1]);
 
         GameOfDice gameOfDice = new GameOfDice();
@@ -15,17 +17,18 @@ public class GameOfDice {
         //players list will hold the players from 1-n in random order which indicates turns
         ArrayList<Player> players = new ArrayList<Player>(n);
 
-        Random random = new Random();
         for(int i=0;i<n;i++) {
             players.add(i, new Player(i+1));
         }
+        //Randomising order of turn for Players
         Collections.shuffle(players);
 
         int turn = 0;
         while(true) {
-
+            //Get current Player who will roll the dice
             Player player = players.get(turn);
 
+            //Handle Consecutive Ones scenario & skip Players who have completed the game by achieving score >= m
             if(player.getSkipTurn() && player.getScore() < m) {
                 System.out.println(player.getName() + " rolled consecutive Ones, Skipping turn");
                 player.setSkipTurn(false);
@@ -36,12 +39,19 @@ public class GameOfDice {
                 turn = (turn+1)%n;
                 continue;
             }
+
+
+            //Display bonus turn message
             gameOfDice.displaySpecialMessage(player, rolledSix);
 
+            //Handling input to either roll dice or abort the game
             gameOfDice.handleInput(player);
 
+            //Add to score of current player & decode next turn
             turn = gameOfDice.rollDice(player, turn, n, m);
 
+
+            //Display individual player game completion message
             if(player.getScore() >= m) {
                 System.out.println(player.getName() + " completed the game");
                 player.setSkipTurn(true);
@@ -49,6 +59,8 @@ public class GameOfDice {
                 rolledSix = false;
                 incrementTimeStamp = true;
             }
+
+            //Display Score Table
             gameOfDice.displayScoreTable(players, incrementTimeStamp);
         }
     }
